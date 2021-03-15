@@ -1,16 +1,10 @@
-PSVAR := $(shell docker ps -a -q  --filter ancestor=bugs)
+#PSVAR := $(shell docker ps -a -q  --filter ancestor=bugs)
 
 deploy:
-	docker stop $(PSVAR)
+	-docker stop httpd
 	docker build . -t bugs
-	docker run -d -p 80:80 bugs
+	docker run -d -p 80:80 --rm --name httpd bugs
 
-biuld-it:
-	docker stop $(docker ps -a -q  --filter ancestor=bugs)
-	docker build . -t bugs
-	docker run -it -p 80:80 bugs
 
 sync:	
-	docker rmi $(PSVAR)
-	docker build --no-cache . -t bugs
-	docker run -d -p 80:80 bugs
+	docker exec -it httpd sh ./sync.sh

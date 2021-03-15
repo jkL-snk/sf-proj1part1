@@ -2,9 +2,11 @@ FROM httpd
 
 WORKDIR /usr/local/apache2/htdocs
 
-RUN apt update
-RUN apt-get install -y wget
-#RUN apt-get install -y cron
+RUN apt update && apt-get install -y wget cron supervisor
+
+COPY supervisor.conf /etc/supervisor/conf.d/supervisor.conf
+COPY cron /etc/cron.d/sample
+
 RUN rm index.html
 RUN wget -O index.html https://www.chiark.greenend.org.uk/~sgtatham/bugs.html
 RUN wget https://www.chiark.greenend.org.uk/~sgtatham/bugs-br.html
@@ -23,12 +25,14 @@ RUN wget https://www.chiark.greenend.org.uk/~sgtatham/bugs-tw.html
 RUN wget https://www.chiark.greenend.org.uk/~sgtatham/bugs-nl.html
 RUN wget https://www.chiark.greenend.org.uk/~sgtatham/bugs.html
 
-#COPY url.txt /usr/local/apache2/htdocs 
-#COPY sync.sh /usr/local/apache2/htdocs
-#RUN chmod +x sync.sh
+COPY url.txt /usr/local/apache2/htdocs 
+COPY sync.sh /usr/local/apache2/htdocs
+RUN chmod +x sync.sh
 
 #RUN crontab -l | { cat; echo "45 3 * * 6 /usr/local/apache2/htdocs/sync.sh"; } | crontab -
 
 ExPOSE 80
 
-CMD /usr/local/bin/httpd-foreground
+#CMD /usr/local/bin/httpd-foreground
+
+CMD /usr/bin/supervisord
