@@ -5,6 +5,5 @@ deploy:
 	docker build . -t bugs
 	docker run -d -p 80:80 --rm --name httpd bugs
 
-
 sync:	
 	docker exec -it httpd sh ./sync.sh
